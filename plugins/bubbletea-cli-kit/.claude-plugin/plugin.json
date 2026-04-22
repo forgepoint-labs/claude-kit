@@ -1,0 +1,13 @@
+{
+  "name": "bubbletea-cli-kit",
+  "version": "0.1.0",
+  "description": "Go 1.25 TUI CLI patterns with Bubbletea v2 + Bubbles + Lipgloss",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["go", "bubbletea", "tui", "cli", "lipgloss", "bubbles"]
+}

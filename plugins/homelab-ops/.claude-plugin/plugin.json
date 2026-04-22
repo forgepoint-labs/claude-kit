@@ -1,0 +1,13 @@
+{
+  "name": "homelab-ops",
+  "version": "0.1.0",
+  "description": "Raspberry Pi + Ubuntu homelab admin: systemd, Docker, Podman, ufw, SSH hardening, unattended-upgrades",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["linux", "homelab", "docker", "podman", "systemd", "raspberry-pi", "ubuntu", "ssh", "ufw"]
+}

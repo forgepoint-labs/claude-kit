@@ -1,0 +1,74 @@
+---
+name: mcp-scaffold-ts
+description: Scaffold a new stdio MCP server in TypeScript using @modelcontextprotocol/sdk and Zod. Use when the user says they want to build an MCP server, wrap a tool as MCP, or expose TS code to Claude/other MCP hosts.
+---
+
+# Scaffold a TypeScript stdio MCP server
+
+Use when the user wants a new MCP server from scratch in TypeScript.
+
+## Decision questions (ask first)
+
+1. **Transport**: `stdio` (local per-user) or `Streamable HTTP` (remote / multi-user)?
+2. **Package manager**: `npm`, `pnpm`, or `yarn`?
+3. **What tools** will this server expose? (get rough list of 3–5 tool names + what each does)
+4. **Auth** (HTTP only): OAuth, bearer token, API key in header, or none?
+
+Default to `stdio` + `pnpm` unless the user indicates otherwise.
+
+## Layout
+
+```
+my-mcp/
+├── package.json
+├── tsconfig.json
+├── src/
+│   ├── index.ts         # entrypoint — creates server, wires tools, connects transport
+│   └── tools/
+│       └── example.ts   # one file per tool
+└── README.md
+```
+
+## Entrypoint template
+
+```ts
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({ name: "my-mcp", version: "0.1.0" });
+
+server.tool(
+  "example",
+  "Short description of what this tool does — shown to the model.",
+  { input: z.string().describe("what the input is") },
+  async ({ input }) => ({
+    content: [{ type: "text", text: `You sent: ${input}` }],
+  }),
+);
+
+await server.connect(new StdioServerTransport());
+```
+
+## Golden rules
+
+- ❌ Never `console.log` — stdout is the JSON-RPC stream. Log to `process.stderr` instead.
+- ✅ Use Zod schemas for tool inputs; they auto-generate JSON Schema for the model.
+- ✅ Return `{ content: [{ type: "text", text: ... }] }`. For binary, use `type: "resource"` with a URI.
+- ✅ Declare a `bin` in `package.json` (`"bin": { "my-mcp": "./dist/index.js" }`) so users can `npx my-mcp`.
+- ✅ Ship a `README.md` with a copy-paste `claude mcp add` snippet.
+
+## Test with Inspector
+
+```sh
+pnpm build
+npx @modelcontextprotocol/inspector node ./dist/index.js
+```
+
+Inspector opens in the browser; verify each tool in the Tools tab before wiring Claude.
+
+## Install in Claude Code
+
+```sh
+claude mcp add --transport stdio my-mcp -- node /abs/path/to/dist/index.js
+```

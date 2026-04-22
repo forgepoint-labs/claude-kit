@@ -1,0 +1,13 @@
+{
+  "name": "nextjs-app-router-kit",
+  "version": "0.1.0",
+  "description": "Next.js 16 + App Router + React 19 + Tailwind 4 + shadcn/ui conventions",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["nextjs", "react", "tailwind", "shadcn", "app-router", "typescript"]
+}

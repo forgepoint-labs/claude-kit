@@ -1,0 +1,54 @@
+{
+  "name": "forgepoint-labs",
+  "owner": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "metadata": {
+    "description": "Public plugins for Claude Code — web, CLI, homelab, AWS serverless patterns, MCP authoring",
+    "version": "0.1.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "mcp-authoring",
+      "source": "mcp-authoring",
+      "description": "Opinionated scaffold + publish workflow for MCP servers",
+      "version": "0.1.0",
+      "category": "tooling",
+      "tags": ["mcp", "tooling", "authoring"]
+    },
+    {
+      "name": "bubbletea-cli-kit",
+      "source": "bubbletea-cli-kit",
+      "description": "Go 1.25 TUI CLI patterns with Bubbletea + Bubbles + Lipgloss",
+      "version": "0.1.0",
+      "category": "cli",
+      "tags": ["go", "tui", "bubbletea", "cli"]
+    },
+    {
+      "name": "homelab-ops",
+      "source": "homelab-ops",
+      "description": "Raspberry Pi + Ubuntu homelab admin: systemd, Docker, Podman, ufw, SSH",
+      "version": "0.1.0",
+      "category": "devops",
+      "tags": ["linux", "homelab", "docker", "systemd", "raspberry-pi"]
+    },
+    {
+      "name": "nextjs-app-router-kit",
+      "source": "nextjs-app-router-kit",
+      "description": "Next.js 16 + App Router + React 19 + Tailwind 4 + shadcn conventions",
+      "version": "0.1.0",
+      "category": "frontend",
+      "tags": ["nextjs", "react", "tailwind", "shadcn"]
+    },
+    {
+      "name": "aws-serverless-patterns",
+      "source": "aws-serverless-patterns",
+      "description": "Generic AWS CDK + SAM patterns with middy middleware and Powertools",
+      "version": "0.1.0",
+      "category": "backend",
+      "tags": ["aws", "lambda", "cdk", "sam", "middy"]
+    }
+  ]
+}

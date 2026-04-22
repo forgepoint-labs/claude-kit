@@ -1,0 +1,17 @@
+name: Separation audit
+
+on:
+  pull_request:
+  push:
+    branches: [main, prod]
+
+jobs:
+  audit:
+    name: Block client/employer content leaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make script executable
+        run: chmod +x .github/scripts/separation-audit.sh
+      - name: Run full-repo audit
+        run: bash .github/scripts/separation-audit.sh full

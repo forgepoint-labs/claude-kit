@@ -1,0 +1,13 @@
+{
+  "name": "mcp-authoring",
+  "version": "0.1.0",
+  "description": "Opinionated scaffold + publish workflow for MCP servers (stdio + Streamable HTTP, TS + Python)",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["mcp", "scaffold", "authoring", "server"]
+}
