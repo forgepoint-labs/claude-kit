@@ -1,4 +1,4 @@
-name: Separation audit
+name: Quality gates
 
 on:
   pull_request:
@@ -15,3 +15,11 @@ jobs:
         run: chmod +x .github/scripts/separation-audit.sh
       - name: Run full-repo audit
         run: bash .github/scripts/separation-audit.sh full
+
+  skills-sync:
+    name: skills/ mirror is in sync with plugins/
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify skills/ mirror matches plugins/
+        run: bash scripts/sync-skills.sh --check
