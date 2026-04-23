@@ -4,9 +4,9 @@ Conventions for Next.js 16 + App Router + React 19 + TypeScript 5 + Tailwind CSS
 
 ## Skills
 
-- `nextjs-route-scaffold` — scaffold a route segment (page, loading, error, layout) with server components by default
-- `nextjs-server-action` — shape a Server Action with auth check + Zod validation + returning a `{ ok, data } | { ok: false, error }` discriminated union
-- `shadcn-component-add` — add a shadcn/ui component and wire Tailwind 4 tokens
+- `nextjs-route-scaffold` - scaffold a route segment (page, loading, error, layout) with server components by default
+- `nextjs-server-action` - shape a Server Action with auth check + Zod validation + returning a `{ ok, data } | { ok: false, error }` discriminated union
+- `shadcn-component-add` - add a shadcn/ui component and wire Tailwind 4 tokens
 
 ## Assumptions baked into the skills
 

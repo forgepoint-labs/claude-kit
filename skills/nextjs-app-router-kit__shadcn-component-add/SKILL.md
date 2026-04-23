@@ -10,7 +10,7 @@ description: Add a shadcn/ui component to a Next.js 16 + Tailwind 4 project via 
 
 # Adding shadcn/ui components
 
-shadcn/ui isn't an npm dependency; it's a CLI that copies component source into your repo. That's the point — you own the code, customize freely.
+shadcn/ui isn't an npm dependency; it's a CLI that copies component source into your repo. That's the point - you own the code, customize freely.
 
 ## Prerequisites
 
@@ -82,7 +82,7 @@ shadcn components reference these via `bg-primary`, `text-destructive`, etc.
 
 ## Customizing a generated component
 
-The file lives in `src/components/ui/<name>.tsx` — edit directly. Common customizations:
+The file lives in `src/components/ui/<name>.tsx` - edit directly. Common customizations:
 
 - **Size variants**: add to the `cva` `variants: { size: { ... } }` block
 - **Color variants**: same, plus you may want new `--color-*` tokens in `@theme`
@@ -98,14 +98,14 @@ The wrapper pattern is cleaner for non-trivial customizations.
 
 ## Golden rules
 
-- ✅ Check in `src/components/ui/` — these are your source files, not generated.
+- ✅ Check in `src/components/ui/` - these are your source files, not generated.
 - ✅ Use the `cn(...)` helper for conditional classes.
 - ✅ Tokens go in `@theme`; components consume them via Tailwind utility classes.
 - ✅ For non-trivial customizations, wrap don't edit.
-- ❌ Don't mix shadcn components with a second component library — dedupe early.
-- ❌ Don't add every component preemptively — add as needed.
+- ❌ Don't mix shadcn components with a second component library - dedupe early.
+- ❌ Don't add every component preemptively - add as needed.
 
 ## Related skills
 
-- `nextjs-route-scaffold` — where these components get used
-- `nextjs-server-action` — common pairing (form + button)
+- `nextjs-route-scaffold` - where these components get used
+- `nextjs-server-action` - common pairing (form + button)

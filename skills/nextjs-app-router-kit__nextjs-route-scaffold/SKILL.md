@@ -15,8 +15,8 @@ Use when the user wants a new route / page. Default to Server Components.
 ## Decision questions (ask first)
 
 1. **Route path** (e.g. `/dashboard/settings`)
-2. **Does it need data fetching?** If yes — Server Component.
-3. **Does it need interactivity?** If yes — isolated `"use client"` leaf components only.
+2. **Does it need data fetching?** If yes - Server Component.
+3. **Does it need interactivity?** If yes - isolated `"use client"` leaf components only.
 4. **Should it have its own layout?** (nav, sidebar)
 5. **Authenticated?** If yes, wrap in a middleware match or layout-level check.
 
@@ -34,7 +34,7 @@ src/app/<segment>/
 
 ## Templates
 
-**page.tsx** (server component — can be `async`):
+**page.tsx** (server component - can be `async`):
 
 ```tsx
 export default async function SegmentPage() {
@@ -99,6 +99,6 @@ export default function SegmentLayout({
 
 - ✅ Server Component unless interactivity forces `"use client"`.
 - ✅ Data fetching lives in the server component; pass primitives / serializable props to client leaves.
-- ✅ `error.tsx` is always a client component — no exceptions.
+- ✅ `error.tsx` is always a client component - no exceptions.
 - ✅ Use `loading.tsx` instead of client-side spinners for route-level suspense.
 - ❌ Don't leak secrets to client components; if you see the value being passed as a prop, the server should have already used it.

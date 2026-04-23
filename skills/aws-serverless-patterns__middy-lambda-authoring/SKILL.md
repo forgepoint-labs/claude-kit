@@ -14,11 +14,11 @@ Use when creating a new Node.js Lambda behind API Gateway REST or HTTP API.
 
 ## Decision questions (ask first)
 
-1. **Handler purpose** — one sentence.
-2. **Auth** — public, API key, Cognito, custom authorizer?
-3. **Inputs** — path params, query, body. What's the shape?
-4. **VPC** — does this need VPC attachment (e.g. RDS, ElastiCache)?
-5. **Timeout + memory** — default is 90s / 512MB unless the user has a reason to change.
+1. **Handler purpose** - one sentence.
+2. **Auth** - public, API key, Cognito, custom authorizer?
+3. **Inputs** - path params, query, body. What's the shape?
+4. **VPC** - does this need VPC attachment (e.g. RDS, ElastiCache)?
+5. **Timeout + memory** - default is 90s / 512MB unless the user has a reason to change.
 
 ## Layout
 
@@ -86,9 +86,9 @@ export const inputSchema = {
 
 ## Golden rules
 
-- ✅ Every handler is wrapped in `middy` — no raw handlers.
+- ✅ Every handler is wrapped in `middy` - no raw handlers.
 - ✅ Validate with JSON Schema at the middleware layer, not inside the handler.
 - ✅ Throw `createError(400, "…")` from `http-errors` for client errors; `httpErrorHandler` translates to clean responses.
 - ✅ Log via `logger.info/warn/error`, not `console.*`.
 - ✅ ARM64 + Node 22 unless a native dep forces x86_64.
-- ❌ Don't bundle `@aws-sdk/*` — mark as external; they're provided by the runtime.
+- ❌ Don't bundle `@aws-sdk/*` - mark as external; they're provided by the runtime.

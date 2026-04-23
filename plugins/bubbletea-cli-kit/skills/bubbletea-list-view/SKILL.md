@@ -13,7 +13,7 @@ Use when the user wants a list of items the user can filter through and pick one
 - A file/record picker
 - Any navigable collection where the user commits to exactly one selection
 
-Prefer the `bubbles/list` component — it already handles filtering, pagination, selection, and help.
+Prefer the `bubbles/list` component - it already handles filtering, pagination, selection, and help.
 
 ## Layout
 
@@ -80,23 +80,23 @@ func (m Model) View() string { return m.list.View() }
 
 ## Keybinding conventions
 
-- `j`/`↓` — next item
-- `k`/`↑` — previous item
-- `/` — start filter
-- `esc` — clear filter / cancel
-- `enter` — commit selection
-- `q`/`ctrl-c` — quit without selection
+- `j`/`↓` - next item
+- `k`/`↑` - previous item
+- `/` - start filter
+- `esc` - clear filter / cancel
+- `enter` - commit selection
+- `q`/`ctrl-c` - quit without selection
 
 Don't override `bubbles/list` defaults unless you have a reason.
 
 ## Golden rules
 
 - ✅ Use `list.NewDefaultDelegate()` for rendering unless you need a custom cell layout.
-- ✅ Set `SetSize` on every `WindowSizeMsg` — lists don't auto-resize.
-- ✅ Use `FilterValue()` carefully — this is what `/` filters on.
-- ❌ Don't reimplement the scroll / filter loop — you'll reinvent bugs already fixed upstream.
+- ✅ Set `SetSize` on every `WindowSizeMsg` - lists don't auto-resize.
+- ✅ Use `FilterValue()` carefully - this is what `/` filters on.
+- ❌ Don't reimplement the scroll / filter loop - you'll reinvent bugs already fixed upstream.
 
 ## Related skills
 
-- `bubbletea-scaffold` — the outer program structure
-- `bubbletea-form-view` — when selection needs multiple fields first
+- `bubbletea-scaffold` - the outer program structure
+- `bubbletea-form-view` - when selection needs multiple fields first

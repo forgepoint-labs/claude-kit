@@ -10,14 +10,14 @@ description: Checklist to submit an MCP server to the official MCP Registry usin
 
 # Publish an MCP server to the official Registry
 
-The official Registry at [registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io) is metadata-only — your package lives on npm, PyPI, Docker Hub, or as a Go binary. The Registry entry points at it.
+The official Registry at [registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io) is metadata-only - your package lives on npm, PyPI, Docker Hub, or as a Go binary. The Registry entry points at it.
 
 ## Prerequisites
 
 - The server is **public** (GitHub repo, OSS license, no secrets).
 - The server passes Inspector end-to-end.
 - Someone other than you has verified they can install + run it.
-- You own the namespace — either `io.github.<your-github>/<name>` (verified via a repo) or `com.example/<name>` (verified via DNS).
+- You own the namespace - either `io.github.<your-github>/<name>` (verified via a repo) or `com.example/<name>` (verified via DNS).
 
 ## server.json
 
@@ -53,7 +53,7 @@ Every Registry submission is a `server.json` file. Minimal example:
 - [ ] At least one transport example config (for claude_desktop_config.json or `claude mcp add`)
 - [ ] PR opened against [modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry)
 - [ ] CI green on the PR
-- [ ] Wait for review — 1–5 business days
+- [ ] Wait for review - 1-5 business days
 
 ## After publishing
 

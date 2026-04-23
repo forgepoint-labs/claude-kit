@@ -27,7 +27,7 @@ APT::Periodic::Unattended-Upgrade "1";
 APT::Periodic::AutocleanInterval "7";
 ```
 
-## Configuration — `/etc/apt/apt.conf.d/50unattended-upgrades`
+## Configuration - `/etc/apt/apt.conf.d/50unattended-upgrades`
 
 Key settings to review:
 
@@ -57,10 +57,10 @@ Unattended-Upgrade::MailReport "only-on-error";
 
 ## Decisions
 
-- **`Automatic-Reboot "true"`** — fine for a homelab. For production workloads, set `"false"` and schedule reboots manually.
-- **`Automatic-Reboot-Time "03:30"`** — off-hours.
-- **`Automatic-Reboot-WithUsers "false"`** — don't reboot if someone's logged in (protects ongoing SSH sessions).
-- **`Mail`** — requires a working local MTA (`postfix` with satellite config, or `msmtp`). Skip if you don't have email set up; check state manually instead.
+- **`Automatic-Reboot "true"`** - fine for a homelab. For production workloads, set `"false"` and schedule reboots manually.
+- **`Automatic-Reboot-Time "03:30"`** - off-hours.
+- **`Automatic-Reboot-WithUsers "false"`** - don't reboot if someone's logged in (protects ongoing SSH sessions).
+- **`Mail`** - requires a working local MTA (`postfix` with satellite config, or `msmtp`). Skip if you don't have email set up; check state manually instead.
 
 ## Verify
 
@@ -98,14 +98,14 @@ And surfaces the result via whatever you already use (Slack webhook, Discord bot
 
 ## Golden rules
 
-- ✅ Security updates on by default — auto-reboot is optional.
+- ✅ Security updates on by default - auto-reboot is optional.
 - ✅ `Automatic-Reboot-WithUsers "false"` if humans ever SSH in.
 - ✅ Check `/var/run/reboot-required` in your regular health routine.
 - ✅ Test with `--dry-run` after config changes.
 - ❌ Don't enable non-security `-updates` unless you have a rollback strategy; minor version bumps occasionally break things.
-- ❌ Don't disable unattended-upgrades — the alternative (you remembering to patch) is worse.
+- ❌ Don't disable unattended-upgrades - the alternative (you remembering to patch) is worse.
 
 ## Related skills
 
-- `ssh-hardening` — OpenSSH CVEs are exactly what this catches quickly
-- `systemd-service-authoring` — services restart cleanly after dpkg updates if the unit is well-written
+- `ssh-hardening` - OpenSSH CVEs are exactly what this catches quickly
+- `systemd-service-authoring` - services restart cleanly after dpkg updates if the unit is well-written

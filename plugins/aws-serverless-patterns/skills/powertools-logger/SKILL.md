@@ -3,7 +3,7 @@ name: powertools-logger
 description: Wire AWS Lambda Powertools Logger (Node.js) into a handler via the middy middleware, with structured logging, correlation ids, sampling, and POWERTOOLS_SERVICE_NAME env var. Use when adding structured logging to a new Lambda or migrating from console.log.
 ---
 
-# Powertools Logger — structured logging for Lambda
+# Powertools Logger - structured logging for Lambda
 
 JSON-structured logs in CloudWatch with request context automatically injected. No more `console.log` breadcrumbs.
 
@@ -13,7 +13,7 @@ JSON-structured logs in CloudWatch with request context automatically injected. 
 pnpm add @aws-lambda-powertools/logger
 ```
 
-## Basic usage — middy-wrapped
+## Basic usage - middy-wrapped
 
 ```ts
 import middy from "@middy/core";
@@ -58,7 +58,7 @@ export const handler = middy(baseHandler)
 | `POWERTOOLS_LOG_LEVEL_FORCE` | force level regardless of env |
 | `POWERTOOLS_LOG_EVENT` | log full event (dev only) |
 | `POWERTOOLS_DEV` | pretty-print + color (local only) |
-| `POWERTOOLS_LOGGER_SAMPLE_RATE` | `0.0`–`1.0`: probability to log DEBUG at runtime |
+| `POWERTOOLS_LOGGER_SAMPLE_RATE` | `0.0`-`1.0`: probability to log DEBUG at runtime |
 
 Set via CloudFormation / SAM `Environment.Variables` or CDK `environment`.
 
@@ -115,13 +115,13 @@ Pretty-printed logs with color, structured JSON still under the hood.
 - ✅ `injectLambdaContext` middleware on every handler.
 - ✅ `logEvent: false` unless you're sure the event contains no PII.
 - ✅ `clearState: true` to prevent persistent-key leaks between invocations.
-- ✅ Use `logger.error(msg, { err })` — never string-concatenate errors.
+- ✅ Use `logger.error(msg, { err })` - never string-concatenate errors.
 - ✅ Don't log secrets, tokens, SSNs, credit data, or session ids.
-- ❌ Don't use `console.log` in a Lambda — it loses structure and context.
+- ❌ Don't use `console.log` in a Lambda - it loses structure and context.
 - ❌ Don't log at DEBUG in prod without sampling.
 
 ## Related skills
 
-- `middy-lambda-authoring` — the handler pattern this middleware wraps
-- `sam-api-gateway` — wiring `POWERTOOLS_SERVICE_NAME` at the SAM level
-- `cdk-nested-stack` — wiring it at the CDK level via `environment`
+- `middy-lambda-authoring` - the handler pattern this middleware wraps
+- `sam-api-gateway` - wiring `POWERTOOLS_SERVICE_NAME` at the SAM level
+- `cdk-nested-stack` - wiring it at the CDK level via `environment`

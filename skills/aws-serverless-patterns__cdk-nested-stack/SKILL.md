@@ -5,7 +5,7 @@ Do NOT edit here. Edit the canonical source and re-run scripts/sync-skills.sh.
 -->
 ---
 name: cdk-nested-stack
-description: Structure an AWS CDK app using parent + nested stacks — a parent Stack that composes feature-scoped NestedStacks via props, cross-stack references, and deploy-ordered outputs. Use when a single stack is getting too large or when features should be deployable in isolation.
+description: Structure an AWS CDK app using parent + nested stacks - a parent Stack that composes feature-scoped NestedStacks via props, cross-stack references, and deploy-ordered outputs. Use when a single stack is getting too large or when features should be deployable in isolation.
 ---
 
 # CDK nested stack composition
@@ -20,7 +20,7 @@ Split when ONE of:
 - A subset of resources can be deployed independently (e.g. just the public API) without touching the rest
 - The CloudFormation template is bumping up against the 1MB template limit
 
-Don't split prematurely — a single flat stack is easier to reason about until it isn't.
+Don't split prematurely - a single flat stack is easier to reason about until it isn't.
 
 ## Structure
 
@@ -53,7 +53,7 @@ export class ParentStack extends Stack {
     const vpc = new Vpc(this, "Vpc", { maxAzs: 3 });
     const table = new Table(this, "Table", { /* ... */ });
 
-    // Nested stacks — compose by feature:
+    // Nested stacks - compose by feature:
     new RestApiStack(this, "RestApi", { vpc, table });
     new DynamoStreamStack(this, "DynamoStreams", { table });
   }
@@ -88,7 +88,7 @@ export class RestApiStack extends NestedStack {
 
 ## Key rules
 
-- **Shared resources live in the parent.** VPC, the primary DDB table, a top-level role — these belong in the parent so all nested stacks reference the same instance.
+- **Shared resources live in the parent.** VPC, the primary DDB table, a top-level role - these belong in the parent so all nested stacks reference the same instance.
 - **Cross-stack refs flow through props.** Never reach into a sibling's constructs (`sibling.api`). Route through the parent's props chain.
 - **Outputs for humans, props for machines.** `CfnOutput` is for console browsing; constructs should reference objects directly.
 - **Nested stacks inherit the parent's removal policy, account, region, and tags.** You can't deploy a nested stack in a different account.
@@ -100,18 +100,18 @@ Snapshot tests with `assertions.Template.fromStack(parentStack)` capture the who
 
 ## When to stop
 
-If you find yourself passing 10+ props into a nested stack, the split is at the wrong boundary. Rethink — maybe the nested stack is doing two things, or the parent is under-cohesive.
+If you find yourself passing 10+ props into a nested stack, the split is at the wrong boundary. Rethink - maybe the nested stack is doing two things, or the parent is under-cohesive.
 
 ## Golden rules
 
 - ✅ Parent owns shared resources; nested stacks own feature-specific ones.
-- ✅ Cross-stack refs via props only — no reaching sideways.
+- ✅ Cross-stack refs via props only - no reaching sideways.
 - ✅ One `NestedStack` per cohesive feature.
 - ✅ Keep props objects typed (`interface MyStackProps extends NestedStackProps`).
-- ❌ Don't split a stack because it "feels big" — split when it actually hurts.
+- ❌ Don't split a stack because it "feels big" - split when it actually hurts.
 - ❌ Don't deploy nested stacks independently; they're deployed as part of the parent.
 
 ## Related skills
 
-- `middy-lambda-authoring` — the handlers each nested stack wires up
-- `sam-api-gateway` — SAM alternative if you're not on CDK
+- `middy-lambda-authoring` - the handlers each nested stack wires up
+- `sam-api-gateway` - SAM alternative if you're not on CDK

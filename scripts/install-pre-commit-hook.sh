@@ -23,7 +23,7 @@ cat > "$HOOK_FILE" <<'EOF'
 # Pre-commit hook:
 #   1. Regenerate skills/ mirror from plugins/*/skills/*/SKILL.md and
 #      restage any changes so the mirror is always in sync.
-#   2. Block AGC / client content from reaching the public repo.
+#   2. Block client or employer content from reaching the public repo.
 set -e
 ROOT="$(git rev-parse --show-toplevel)"
 if [ -x "$ROOT/scripts/sync-skills.sh" ]; then

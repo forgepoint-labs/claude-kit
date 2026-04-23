@@ -1,5 +1,5 @@
 #!/bin/bash
-# sync-skills.sh — Regenerates the top-level skills/ and agents/ mirrors
+# sync-skills.sh - Regenerates the top-level skills/ and agents/ mirrors
 # from the canonical plugins/<plugin>/skills/<skill>/SKILL.md and
 # plugins/<plugin>/agents/<agent>.md files.
 #
@@ -191,4 +191,4 @@ agent_count=0
 if [ -d "$AGENTS_DIR" ]; then
   agent_count="$(find "$AGENTS_DIR" -maxdepth 1 -name "*.md" -not -name "README.md" | wc -l | tr -d ' ')"
 fi
-echo "✅ Mirrors regenerated — $skill_count skill(s), $agent_count subagent(s)."
+echo "✅ Mirrors regenerated - $skill_count skill(s), $agent_count subagent(s)."

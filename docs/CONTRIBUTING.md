@@ -26,17 +26,17 @@ plugins/<plugin-name>/
 
 Optional at the plugin root:
 
-- `agents/` — subagent definitions
-- `hooks/hooks.json` — lifecycle hooks
-- `.mcp.json` — bundled MCP servers
-- `settings.json` — default settings when enabled
+- `agents/` - subagent definitions
+- `hooks/hooks.json` - lifecycle hooks
+- `.mcp.json` - bundled MCP servers
+- `settings.json` - default settings when enabled
 
 ## SKILL.md format
 
 ```markdown
 ---
 name: my-skill
-description: One-sentence description of what the skill does AND when Claude should invoke it. This is the routing signal — be precise.
+description: One-sentence description of what the skill does AND when Claude should invoke it. This is the routing signal - be precise.
 ---
 
 # Title

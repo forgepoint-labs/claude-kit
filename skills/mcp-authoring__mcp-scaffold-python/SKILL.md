@@ -10,12 +10,12 @@ description: Scaffold a new stdio MCP server in Python using FastMCP. Use when t
 
 # Scaffold a Python stdio MCP server (FastMCP)
 
-Use when the user wants an MCP server in Python — FastMCP is the lowest-friction option and ships with the official `mcp` SDK.
+Use when the user wants an MCP server in Python - FastMCP is the lowest-friction option and ships with the official `mcp` SDK.
 
 ## Decision questions (ask first)
 
 1. **Python version**: 3.11+ recommended (use `uv` for env management)
-2. **What tools** will this server expose? (3–5 tool names + descriptions)
+2. **What tools** will this server expose? (3-5 tool names + descriptions)
 3. **Deployment**: local only, internal network, or public?
 
 ## Layout
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
 ## Golden rules
 
-- ❌ Never `print()` to stdout — stdout is the JSON-RPC stream. Use `print(..., file=sys.stderr)` or the `logging` module.
+- ❌ Never `print()` to stdout - stdout is the JSON-RPC stream. Use `print(..., file=sys.stderr)` or the `logging` module.
 - ✅ FastMCP auto-derives the schema from **type hints + docstrings**. Write clear Google-style docstrings.
 - ✅ Include a `[project.scripts]` entry in `pyproject.toml` (`my-mcp = "my_mcp.server:mcp.run"`) so `uvx my-mcp` works.
 

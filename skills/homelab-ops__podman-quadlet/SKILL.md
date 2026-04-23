@@ -5,10 +5,10 @@ Do NOT edit here. Edit the canonical source and re-run scripts/sync-skills.sh.
 -->
 ---
 name: podman-quadlet
-description: Declarative container management via Podman Quadlet — .container files in /etc/containers/systemd/ that systemd translates into rootless service units. Use when running containers on Ubuntu / RHEL / Fedora without Docker, or when you want containers to run as first-class systemd services.
+description: Declarative container management via Podman Quadlet - .container files in /etc/containers/systemd/ that systemd translates into rootless service units. Use when running containers on Ubuntu / RHEL / Fedora without Docker, or when you want containers to run as first-class systemd services.
 ---
 
-# Podman Quadlet — containers as systemd units
+# Podman Quadlet - containers as systemd units
 
 Quadlet turns declarative `.container` (or `.pod`, `.network`, `.volume`) files into systemd services. You get rootless containers with systemd's full lifecycle management, no daemon.
 
@@ -26,7 +26,7 @@ Prefer Quadlet when the host already uses systemd for everything else.
 
 After creating or editing a file, run `systemctl daemon-reload` then `systemctl start <name>.service`.
 
-## Template — `<name>.container`
+## Template - `<name>.container`
 
 ```ini
 [Unit]
@@ -88,7 +88,7 @@ sudo loginctl enable-linger $USER
 
 - No daemon, no group-membership escalation
 - `AutoUpdate=registry` + `podman auto-update.timer` (a ships-with-podman systemd timer) pulls image updates automatically
-- Logs go through journald — `journalctl -u <name>` works like any other service
+- Logs go through journald - `journalctl -u <name>` works like any other service
 
 ## Secrets
 
@@ -113,10 +113,10 @@ Secrets never land on disk in the container filesystem.
 - ✅ Loopback-bind ports (`127.0.0.1:...`) and front with a reverse proxy.
 - ✅ `Z` suffix on SELinux systems for bind-mounted host dirs.
 - ✅ Use `podman auto-update.timer` for unattended updates.
-- ❌ Don't run as root unless the image truly requires it — the whole point is rootless.
+- ❌ Don't run as root unless the image truly requires it - the whole point is rootless.
 - ❌ Don't mix Docker and Podman on the same host without a reason; they compete for resources.
 
 ## Related skills
 
-- `systemd-service-authoring` — the unit-file conventions Quadlet ultimately produces
-- `docker-compose-baseline` — the alternative, when Podman isn't available
+- `systemd-service-authoring` - the unit-file conventions Quadlet ultimately produces
+- `docker-compose-baseline` - the alternative, when Podman isn't available

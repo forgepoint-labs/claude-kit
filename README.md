@@ -1,4 +1,4 @@
-# claude-kit — ForgePoint Labs Plugins for Claude Code
+# claude-kit - ForgePoint Labs Plugins for Claude Code
 
 > A curated plugin marketplace for [Claude Code](https://code.claude.com). Skills, subagents, and MCP server starters from real production work.
 
@@ -36,7 +36,7 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 ## Contributing
 
-- **Don't submit AGC / client-specific code.** This repo is public. A separation audit runs on every PR (`.github/workflows/audit.yml`).
+- **Don't submit client or employer-specific code.** This repo is public. A separation audit runs on every PR (`.github/workflows/audit.yml`).
 - Install the local pre-commit hook so you catch leaks before pushing: `bash scripts/install-pre-commit-hook.sh`.
 - Each plugin ships with a `plugin.json` manifest. Bump `version` using semver.
 - PRs should describe: what the plugin does, when Claude should invoke it, one example interaction.
@@ -44,13 +44,13 @@ claude --plugin-dir ./plugins/<plugin-name>
 ## Roadmap
 
 - [ ] Ship `mcp-authoring` v0.1 (priority one)
-- [ ] Ship `gh-tools-mcp` native Go MCP server — see sibling repo when published
+- [ ] Ship `gh-tools-mcp` native Go MCP server - see sibling repo when published
 - [ ] First external contribution
 - [ ] Submit `io.github.forgepoint-labs/gh-tools` to the [MCP Registry](https://modelcontextprotocol.io/registry/about)
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT - see [LICENSE](./LICENSE).
 
 ## About ForgePoint Labs
 

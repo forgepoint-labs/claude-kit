@@ -84,7 +84,7 @@ export function NewApplicantForm() {
 
 ## Why the discriminated-union return
 
-- No exceptions crossing the RPC boundary — Next swallows them on the wire and loses your message.
+- No exceptions crossing the RPC boundary - Next swallows them on the wire and loses your message.
 - Clients can `switch (res.ok)` with full type narrowing.
 - Errors surface cleanly to the UI as data, not as caught exceptions.
 
@@ -92,23 +92,23 @@ export function NewApplicantForm() {
 
 Pick the right primitive:
 
-- `revalidatePath("/applicants")` — re-render this route segment on next navigation
-- `revalidatePath("/applicants", "layout")` — also re-render nested layouts
-- `revalidateTag("applicant-list")` — tag-based; more surgical when multiple paths share data
+- `revalidatePath("/applicants")` - re-render this route segment on next navigation
+- `revalidatePath("/applicants", "layout")` - also re-render nested layouts
+- `revalidateTag("applicant-list")` - tag-based; more surgical when multiple paths share data
 
 After a mutation, revalidate the page(s) that show the mutated data.
 
 ## Golden rules
 
 - ✅ Auth check first. No exceptions.
-- ✅ Validate with Zod (`safeParse`) — never trust the client's shape.
-- ✅ Return `{ ok, data } | { ok: false, error }` — never throw across the boundary.
+- ✅ Validate with Zod (`safeParse`) - never trust the client's shape.
+- ✅ Return `{ ok, data } | { ok: false, error }` - never throw across the boundary.
 - ✅ `revalidatePath` or `revalidateTag` on success.
 - ✅ Log errors server-side; send a generic error message to the client.
 - ❌ Don't leak stack traces to the client.
-- ❌ Don't put business logic in the server action — call into a domain service. The action is a thin shim.
+- ❌ Don't put business logic in the server action - call into a domain service. The action is a thin shim.
 
 ## Related skills
 
-- `nextjs-route-scaffold` — where these actions get invoked from
-- `shadcn-component-add` — for the form / button components
+- `nextjs-route-scaffold` - where these actions get invoked from
+- `shadcn-component-add` - for the form / button components

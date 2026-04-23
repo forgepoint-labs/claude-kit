@@ -28,11 +28,11 @@ The audit runs:
 
 ## Adding a new forbidden pattern
 
-If you discover a leak risk — a new client, a newly-introduced internal term — add it to `FORBIDDEN_PATTERNS` in `.github/scripts/separation-audit.sh`. No PR review threshold; this is a no-brainer.
+If you discover a leak risk - a new client, a newly-introduced internal term - add it to `FORBIDDEN_PATTERNS` in `.github/scripts/separation-audit.sh`. No PR review threshold; this is a no-brainer.
 
 ## What if I need to reference an internal pattern?
 
-Move it to a private repository (e.g. a separate organization-internal marketplace). Do not attempt to publish internal patterns here "with names changed" — the audit catches obvious leaks but not subtle ones, and this is a no-forgiveness zone.
+Move it to a private repository (e.g. a separate organization-internal marketplace). Do not attempt to publish internal patterns here "with names changed" - the audit catches obvious leaks but not subtle ones, and this is a no-forgiveness zone.
 
 ## If you catch a leak after merge
 

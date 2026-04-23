@@ -14,8 +14,8 @@ Bubbletea's model is pure: `Init`, `Update`, and `View` are deterministic functi
 
 ## Two test styles
 
-1. **Model-only unit tests** — drive `Update` with synthetic messages, assert on the returned model state. Fast, no I/O, no TTY.
-2. **Golden-file snapshot tests** — render `View()` with a fixed window size, compare to a stored `.golden` file. Catch rendering regressions.
+1. **Model-only unit tests** - drive `Update` with synthetic messages, assert on the returned model state. Fast, no I/O, no TTY.
+2. **Golden-file snapshot tests** - render `View()` with a fixed window size, compare to a stored `.golden` file. Catch rendering regressions.
 
 Both live under `internal/tui/` alongside the model.
 
@@ -88,14 +88,14 @@ func TestProgram(t *testing.T) {
 
 ## Golden rules
 
-- ✅ Keep `Update` pure — no I/O. I/O goes in `tea.Cmd`s, which you can mock.
+- ✅ Keep `Update` pure - no I/O. I/O goes in `tea.Cmd`s, which you can mock.
 - ✅ Model-only tests for business logic; snapshot tests for rendering regressions.
 - ✅ Use `teatest` for full program flows.
-- ✅ Commit `.golden` files to git — they're the UI contract.
-- ❌ Don't snapshot on a non-fixed window size — fail non-deterministically.
-- ❌ Don't sleep or poll in tests — use `tea.Cmd` + an injected fake clock if you need time.
+- ✅ Commit `.golden` files to git - they're the UI contract.
+- ❌ Don't snapshot on a non-fixed window size - fail non-deterministically.
+- ❌ Don't sleep or poll in tests - use `tea.Cmd` + an injected fake clock if you need time.
 
 ## Related skills
 
-- `bubbletea-scaffold` — the model under test
-- `bubbletea-list-view` / `bubbletea-form-view` — typical test targets
+- `bubbletea-scaffold` - the model under test
+- `bubbletea-list-view` / `bubbletea-form-view` - typical test targets

@@ -9,7 +9,7 @@ Opinionated scaffold + publish workflow for MCP servers. Complements the officia
 
 ## Skills
 
-- `mcp-scaffold-ts` — scaffolds a new stdio MCP server in TypeScript using `@modelcontextprotocol/sdk` + Zod
-- `mcp-scaffold-python` — scaffolds a new stdio MCP server using `FastMCP`
-- `mcp-wrap-cli` — turns an existing CLI (e.g. Go/Rust binary) into an MCP server by mapping subcommands to tools
-- `mcp-publish` — checklist to submit an `io.github.<owner>/<server>` entry to the official Registry
+- `mcp-scaffold-ts` - scaffolds a new stdio MCP server in TypeScript using `@modelcontextprotocol/sdk` + Zod
+- `mcp-scaffold-python` - scaffolds a new stdio MCP server using `FastMCP`
+- `mcp-wrap-cli` - turns an existing CLI (e.g. Go/Rust binary) into an MCP server by mapping subcommands to tools
+- `mcp-publish` - checklist to submit an `io.github.<owner>/<server>` entry to the official Registry

@@ -15,7 +15,7 @@ The goal: keep the CLI as the canonical surface for humans, and expose a narrow,
 
 ## Process
 
-1. **Inventory subcommands**. List every command / flag combination worth exposing. Discard the rest — agents don't need every admin flag.
+1. **Inventory subcommands**. List every command / flag combination worth exposing. Discard the rest - agents don't need every admin flag.
 2. **Shape tools**. One MCP tool per *intent*, not per subcommand. Example: `pr_ready` (not `gh pr list --state open --label ready`). Tools should be verbs + nouns.
 3. **Write JSON Schemas**. Every tool input gets a typed schema. The model will call correctly only when the schema is precise.
 4. **Map to execution**. The simplest implementation is `execFile` / `subprocess.run` / `os.Exec`. Capture stdout + stderr, return stdout + exit-code-based error info.
@@ -33,7 +33,7 @@ Pick native when the CLI is already yours and you control releases. Wrapper when
 
 ## Tool description anti-patterns
 
-- ❌ "Runs `gh pr list`" — model doesn't know when to use this.
+- ❌ "Runs `gh pr list`" - model doesn't know when to use this.
 - ✅ "List open pull requests that are ready for review (`status = open`, label = `ready`). Use when the user asks about pending reviews."
 
 The description is *Claude's routing signal*. Write it as if explaining to a new teammate why you'd pick this tool over alternatives.

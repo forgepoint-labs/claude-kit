@@ -5,12 +5,12 @@ description: Implement a multi-field form in Bubbletea v2 with focus management,
 
 # Bubbletea multi-field form view
 
-Use when the user wants a TUI form — several text / textarea / select fields, Tab to move between them, Enter to submit.
+Use when the user wants a TUI form - several text / textarea / select fields, Tab to move between them, Enter to submit.
 
 ## Two idioms
 
 - **For 1-4 simple text fields**: hand-roll with `bubbles/textinput` and `bubbles/textarea`, tracked focus index.
-- **For 5+ fields or complex flows**: use `huh` (`github.com/charmbracelet/huh`) — it's the forms framework from Charm, built on Bubbletea, with built-in validation and theme support.
+- **For 5+ fields or complex flows**: use `huh` (`github.com/charmbracelet/huh`) - it's the forms framework from Charm, built on Bubbletea, with built-in validation and theme support.
 
 Default to `huh` unless the user has a strong reason to hand-roll.
 
@@ -87,13 +87,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 ## Golden rules
 
-- ✅ Default to `huh` — avoid reinventing focus management.
+- ✅ Default to `huh` - avoid reinventing focus management.
 - ✅ One Enter on the last field submits; Esc or Ctrl+C cancels.
 - ✅ Validate on-commit, not on keystroke (except for trivial checks like non-empty).
-- ✅ Show a clear "submitting…" state after Enter — long operations need feedback.
+- ✅ Show a clear "submitting…" state after Enter - long operations need feedback.
 - ❌ Don't stack more than one form on screen at once; push a new model instead.
 
 ## Related skills
 
-- `bubbletea-scaffold` — the outer program
-- `bubbletea-list-view` — often precedes a form ("pick X, then fill out…")
+- `bubbletea-scaffold` - the outer program
+- `bubbletea-list-view` - often precedes a form ("pick X, then fill out…")

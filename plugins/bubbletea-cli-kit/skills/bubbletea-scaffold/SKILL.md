@@ -85,7 +85,7 @@ clean:
 
 - ✅ Use Bubbletea **v2** (the v2 API is significantly cleaner).
 - ✅ Always call `tea.WithAltScreen()` for full-screen apps.
-- ✅ Keep `Update` side-effect-free — return commands (`tea.Cmd`) for I/O.
+- ✅ Keep `Update` side-effect-free - return commands (`tea.Cmd`) for I/O.
 - ✅ Split large models into sub-models; don't jam everything into one `Update` switch.
-- ✅ Define all keybindings in `internal/tui/keys.go` via `key.Binding` — makes help text trivial.
+- ✅ Define all keybindings in `internal/tui/keys.go` via `key.Binding` - makes help text trivial.
 - ❌ Don't print to stdout/stderr inside a Bubbletea program; use `tea.Println` or collect messages.
