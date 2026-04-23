@@ -1,0 +1,112 @@
+---
+name: cdk-nested-stack
+description: Structure an AWS CDK app using parent + nested stacks — a parent Stack that composes feature-scoped NestedStacks via props, cross-stack references, and deploy-ordered outputs. Use when a single stack is getting too large or when features should be deployable in isolation.
+---
+
+# CDK nested stack composition
+
+When your CDK stack outgrows one file (usually around 500-1000 lines of construct setup), split it into a parent stack that composes nested stacks by feature.
+
+## When to split
+
+Split when ONE of:
+- Single stack has > ~30 Lambda/table/queue constructs
+- Multiple teams edit the same stack and conflict
+- A subset of resources can be deployed independently (e.g. just the public API) without touching the rest
+- The CloudFormation template is bumping up against the 1MB template limit
+
+Don't split prematurely — a single flat stack is easier to reason about until it isn't.
+
+## Structure
+
+```
+lib/
+├── parent-stack.ts                 # composes nested stacks
+├── stacks/
+│   ├── rest-api-stack.ts           # RestApiStack extends NestedStack
+│   ├── dynamo-stream-stack.ts
+│   ├── s3-trigger-stack.ts
+│   └── notifications-stack.ts
+└── constructs/                      # shared constructs (e.g. node function builder)
+```
+
+## Parent stack pattern
+
+```ts
+import { Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
+import { RestApiStack } from "./stacks/rest-api-stack";
+import { DynamoStreamStack } from "./stacks/dynamo-stream-stack";
+
+export class ParentStack extends Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
+
+    // Shared resources created in the parent:
+    const vpc = new Vpc(this, "Vpc", { maxAzs: 3 });
+    const table = new Table(this, "Table", { /* ... */ });
+
+    // Nested stacks — compose by feature:
+    new RestApiStack(this, "RestApi", { vpc, table });
+    new DynamoStreamStack(this, "DynamoStreams", { table });
+  }
+}
+```
+
+## Nested stack pattern
+
+```ts
+import { NestedStack, NestedStackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { RestApi } from "aws-cdk-lib/aws-apigateway";
+import type { IVpc } from "aws-cdk-lib/aws-ec2";
+import type { ITable } from "aws-cdk-lib/aws-dynamodb";
+
+export interface RestApiStackProps extends NestedStackProps {
+  vpc: IVpc;
+  table: ITable;
+}
+
+export class RestApiStack extends NestedStack {
+  readonly api: RestApi;
+
+  constructor(scope: Construct, id: string, props: RestApiStackProps) {
+    super(scope, id, props);
+
+    this.api = new RestApi(this, "Api", { /* ... */ });
+    // Wire lambdas that reference props.vpc, props.table
+  }
+}
+```
+
+## Key rules
+
+- **Shared resources live in the parent.** VPC, the primary DDB table, a top-level role — these belong in the parent so all nested stacks reference the same instance.
+- **Cross-stack refs flow through props.** Never reach into a sibling's constructs (`sibling.api`). Route through the parent's props chain.
+- **Outputs for humans, props for machines.** `CfnOutput` is for console browsing; constructs should reference objects directly.
+- **Nested stacks inherit the parent's removal policy, account, region, and tags.** You can't deploy a nested stack in a different account.
+- **Deploy ordering is automatic.** CDK computes the dependency graph from refs; no need to `addDependency` manually.
+
+## Testing
+
+Snapshot tests with `assertions.Template.fromStack(parentStack)` capture the whole composed template. For nested stacks specifically, `Template.fromStack(nestedStack)` works too.
+
+## When to stop
+
+If you find yourself passing 10+ props into a nested stack, the split is at the wrong boundary. Rethink — maybe the nested stack is doing two things, or the parent is under-cohesive.
+
+## Golden rules
+
+- ✅ Parent owns shared resources; nested stacks own feature-specific ones.
+- ✅ Cross-stack refs via props only — no reaching sideways.
+- ✅ One `NestedStack` per cohesive feature.
+- ✅ Keep props objects typed (`interface MyStackProps extends NestedStackProps`).
+- ❌ Don't split a stack because it "feels big" — split when it actually hurts.
+- ❌ Don't deploy nested stacks independently; they're deployed as part of the parent.
+
+## Related skills
+
+- `middy-lambda-authoring` — the handlers each nested stack wires up
+- `sam-api-gateway` — SAM alternative if you're not on CDK

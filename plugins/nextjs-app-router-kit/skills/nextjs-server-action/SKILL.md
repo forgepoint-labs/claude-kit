@@ -1,0 +1,114 @@
+---
+name: nextjs-server-action
+description: Author a Next.js 16 Server Action with auth check, Zod-validated input, a discriminated-union return shape ({ ok: true, data } | { ok: false, error }), and route revalidation. Use when adding a form submission handler or server mutation in a Next.js App Router project.
+---
+
+# Next.js Server Action
+
+Server Actions (`"use server"`) are the preferred way to mutate data from a form or client component. They run on the server, get called over RPC, and integrate with Next's caching / revalidation primitives.
+
+## Canonical shape
+
+```ts
+// src/app/actions/applicant.ts
+"use server";
+
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/auth";
+
+const input = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  email: z.string().email(),
+});
+
+type Result<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: string };
+
+export async function createApplicant(
+  raw: unknown,
+): Promise<Result<{ id: string }>> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, error: "unauthorized" };
+
+  const parsed = input.safeParse(raw);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.message };
+  }
+
+  try {
+    const applicant = await db.applicant.create({
+      data: { ...parsed.data, createdBy: user.id },
+    });
+    revalidatePath("/applicants");
+    return { ok: true, data: { id: applicant.id } };
+  } catch (err) {
+    console.error("createApplicant failed", err);
+    return { ok: false, error: "internal" };
+  }
+}
+```
+
+## Client usage
+
+```tsx
+"use client";
+
+import { useState, useTransition } from "react";
+import { createApplicant } from "@/app/actions/applicant";
+
+export function NewApplicantForm() {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(fd: FormData) {
+    setError(null);
+    start(async () => {
+      const res = await createApplicant(Object.fromEntries(fd));
+      if (!res.ok) setError(res.error);
+      // on success, revalidatePath on the server already pushed new data
+    });
+  }
+
+  return (
+    <form action={onSubmit}>
+      {/* fields */}
+      <button disabled={pending}>Create</button>
+      {error && <p className="text-destructive">{error}</p>}
+    </form>
+  );
+}
+```
+
+## Why the discriminated-union return
+
+- No exceptions crossing the RPC boundary — Next swallows them on the wire and loses your message.
+- Clients can `switch (res.ok)` with full type narrowing.
+- Errors surface cleanly to the UI as data, not as caught exceptions.
+
+## Revalidation
+
+Pick the right primitive:
+
+- `revalidatePath("/applicants")` — re-render this route segment on next navigation
+- `revalidatePath("/applicants", "layout")` — also re-render nested layouts
+- `revalidateTag("applicant-list")` — tag-based; more surgical when multiple paths share data
+
+After a mutation, revalidate the page(s) that show the mutated data.
+
+## Golden rules
+
+- ✅ Auth check first. No exceptions.
+- ✅ Validate with Zod (`safeParse`) — never trust the client's shape.
+- ✅ Return `{ ok, data } | { ok: false, error }` — never throw across the boundary.
+- ✅ `revalidatePath` or `revalidateTag` on success.
+- ✅ Log errors server-side; send a generic error message to the client.
+- ❌ Don't leak stack traces to the client.
+- ❌ Don't put business logic in the server action — call into a domain service. The action is a thin shim.
+
+## Related skills
+
+- `nextjs-route-scaffold` — where these actions get invoked from
+- `shadcn-component-add` — for the form / button components

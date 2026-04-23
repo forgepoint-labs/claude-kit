@@ -1,0 +1,117 @@
+---
+name: podman-quadlet
+description: Declarative container management via Podman Quadlet — .container files in /etc/containers/systemd/ that systemd translates into rootless service units. Use when running containers on Ubuntu / RHEL / Fedora without Docker, or when you want containers to run as first-class systemd services.
+---
+
+# Podman Quadlet — containers as systemd units
+
+Quadlet turns declarative `.container` (or `.pod`, `.network`, `.volume`) files into systemd services. You get rootless containers with systemd's full lifecycle management, no daemon.
+
+## When Quadlet vs docker-compose
+
+- **Quadlet**: single host, tight systemd integration, rootless-first, no Docker installed
+- **docker-compose**: multi-service stacks, lots of existing recipes, Docker already installed
+
+Prefer Quadlet when the host already uses systemd for everything else.
+
+## File location
+
+- System-wide: `/etc/containers/systemd/<name>.container`
+- User-scoped: `~/.config/containers/systemd/<name>.container`
+
+After creating or editing a file, run `systemctl daemon-reload` then `systemctl start <name>.service`.
+
+## Template — `<name>.container`
+
+```ini
+[Unit]
+Description=<what this container does>
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/library/<image>:<pinned-tag>
+ContainerName=<name>
+AutoUpdate=registry
+Environment=TZ=America/New_York
+PublishPort=127.0.0.1:8080:8080
+Volume=<name>-data.volume:/data
+Volume=%h/config/<name>.yaml:/etc/<name>.yaml:ro,Z
+Network=homelab.network
+HealthCmd=curl -f http://localhost:8080/health
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target default.target
+```
+
+Corresponding `<name>-data.volume`:
+
+```ini
+[Volume]
+```
+
+Corresponding `homelab.network`:
+
+```ini
+[Network]
+Driver=bridge
+```
+
+## Enable and start
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now <name>.service
+sudo systemctl status <name>
+journalctl --user-unit <name>.service -f    # user-scoped
+```
+
+For user-scoped quadlets, enable lingering once so services survive logout:
+
+```sh
+sudo loginctl enable-linger $USER
+```
+
+## Rootless benefits
+
+- No daemon, no group-membership escalation
+- `AutoUpdate=registry` + `podman auto-update.timer` (a ships-with-podman systemd timer) pulls image updates automatically
+- Logs go through journald — `journalctl -u <name>` works like any other service
+
+## Secrets
+
+Podman secrets:
+
+```sh
+printf "my-api-key" | podman secret create mykey -
+```
+
+Reference in the `.container` file:
+
+```ini
+Secret=mykey,type=env,target=API_KEY
+```
+
+Secrets never land on disk in the container filesystem.
+
+## Golden rules
+
+- ✅ One container = one `.container` file, versioned in your dotfiles repo.
+- ✅ Pin image tags. Auto-update via `AutoUpdate=registry` for patch-level drift, review before bumping majors.
+- ✅ Loopback-bind ports (`127.0.0.1:...`) and front with a reverse proxy.
+- ✅ `Z` suffix on SELinux systems for bind-mounted host dirs.
+- ✅ Use `podman auto-update.timer` for unattended updates.
+- ❌ Don't run as root unless the image truly requires it — the whole point is rootless.
+- ❌ Don't mix Docker and Podman on the same host without a reason; they compete for resources.
+
+## Related skills
+
+- `systemd-service-authoring` — the unit-file conventions Quadlet ultimately produces
+- `docker-compose-baseline` — the alternative, when Podman isn't available
