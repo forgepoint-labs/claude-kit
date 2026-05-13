@@ -18,6 +18,8 @@
 
 | Plugin | What it is |
 |---|---|
+| **`agent-workflows`** | GitHub-native agent workflows: structured PR review, issue triage, spec-driven implementation, and repo bootstrap. Adapted from [oz-for-oss](https://github.com/warpdotdev/oz-for-oss). |
+| **`self-improvement`** | Self-improvement loops: analyze agent feedback, refine local companion skills, respond to `@oz-agent` mentions. |
 | **`mcp-authoring`** | Opinionated scaffold + publish workflow for building MCP servers (builds on `anthropic/mcp-server-dev`). |
 | **`bubbletea-cli-kit`** | Go 1.25 TUI CLI patterns using Bubbletea + Bubbles + Lipgloss. Includes a scaffold skill, release conventions, and testing patterns. |
 | **`homelab-ops`** | Raspberry Pi + Ubuntu homelab admin: systemd units, Docker + Podman, ufw, SSH hardening, unattended-upgrades. |
@@ -43,6 +45,8 @@ claude --plugin-dir ./plugins/<plugin-name>
 
 ## Roadmap
 
+- [x] Ship `agent-workflows` v0.1 — PR review, triage, spec-driven implementation
+- [x] Ship `self-improvement` v0.1 — feedback loops and `@oz-agent` mention handling
 - [ ] Ship `mcp-authoring` v0.1 (priority one)
 - [ ] Ship `gh-tools-mcp` native Go MCP server - see sibling repo when published
 - [ ] First external contribution
