@@ -1,0 +1,97 @@
+---
+name: opensearch-sync
+description: Sync DynamoDB data into OpenSearch for full-text search via Streams, with per-tenant index isolation, query patterns, and sync lag handling. Use when querying OpenSearch from a Lambda, adding an indexed entity, or debugging sync lag.
+---
+
+# OpenSearch sync patterns
+
+Use OpenSearch as a read-side projection of DynamoDB for full-text search and faceted queries. The primary table is the source of truth; OpenSearch is eventually consistent.
+
+## Connectivity
+
+- VPC-only. Lambdas querying OpenSearch must be VPC-attached.
+- Security group: allow the Lambda's SG to reach the OpenSearch domain SG.
+- Same VPC placement requirements as ElastiCache (see `elasticache-valkey`).
+
+## Index naming
+
+```
+<scope>-<entity>
+tenant-abc-order
+tenant-abc-report
+```
+
+Per-scope indexes for clean isolation, easy deletion on offboarding, and independent scaling.
+
+## Sync via DynamoDB Streams
+
+```
+DynamoDB item changes
+  → Stream event (INSERT / MODIFY / REMOVE)
+  → Lambda handler
+  → translates to index name + document id
+  → _index / _update / _delete call to OpenSearch
+```
+
+Document id = DDB item's sort key. Partitioning is implicit from the index name.
+
+## Query patterns
+
+### Full-text search
+
+```ts
+const res = await opensearch.search({
+  index: `tenant-${scopeKey}-order`,
+  body: {
+    query: {
+      multi_match: {
+        query: searchTerm,
+        fields: ["name^2", "email", "description"],
+        fuzziness: "AUTO",
+      },
+    },
+    size: 20,
+  },
+});
+```
+
+### Faceted / aggregated queries
+
+```ts
+body: {
+  query: { match: { status: "active" } },
+  aggs: {
+    by_category: { terms: { field: "category.keyword" } },
+  },
+  size: 0,   // don't return docs, just aggregations
+}
+```
+
+## Sync lag
+
+Typical end-to-end lag is <2s, but spikes happen. If a user writes an entity and immediately searches, they might not find it.
+
+Workarounds:
+
+- **Write-through**: on critical writes, upsert directly into OpenSearch in addition to the stream sync. Use sparingly (ties write path to OS availability).
+- **Client-side optimistic**: the UI shows the just-written record locally before refetching from search.
+
+## Index templates
+
+Index templates get applied via a custom resource on deploy. Changing a mapping on an existing index is restricted — for breaking changes, reindex into a new index + alias swap.
+
+## Monitoring
+
+- `SyncLag` custom metric: time between DDB event timestamp and successful OS call
+- `SyncErrors` counter by error type
+- Alarm when lag p95 > 5s for 5 minutes
+
+## Golden rules
+
+- ✅ Query via a shared OpenSearch client with SigV4 auth.
+- ✅ Always scope queries by tenant (in the index name).
+- ✅ `size: 0` on aggregation-only queries.
+- ✅ Sync handlers are idempotent — stream replays must produce the same result.
+- ✅ Monitor sync lag; alarm on sustained elevation.
+- ❌ Don't write to OpenSearch directly from application code — go through the stream.
+- ❌ Don't rely on OpenSearch as source of truth — DynamoDB wins any conflict.

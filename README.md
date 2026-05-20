@@ -24,7 +24,7 @@
 | **`bubbletea-cli-kit`** | Go 1.25 TUI CLI patterns using Bubbletea + Bubbles + Lipgloss. Includes a scaffold skill, release conventions, and testing patterns. |
 | **`homelab-ops`** | Raspberry Pi + Ubuntu homelab admin: systemd units, Docker + Podman, ufw, SSH hardening, unattended-upgrades. |
 | **`nextjs-app-router-kit`** | Next.js 16 + App Router + React 19 + Tailwind 4 + shadcn/ui conventions. |
-| **`aws-serverless-patterns`** | Generic AWS CDK + SAM patterns with middy middleware and Powertools. |
+| **`aws-serverless-patterns`** | AWS serverless patterns: Lambda + middy, DynamoDB single-table, Step Functions, CloudFront SPA, WAF, OpenSearch, Valkey, SES, WebSocket, CodeBuild, Flyway, Secrets Manager (16 skills). |
 
 ## Local development
 
