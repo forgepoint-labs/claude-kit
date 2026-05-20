@@ -4,21 +4,21 @@ Minimum viable knowledge to go from zero to a working MCP server in 30 minutes. 
 
 ## What MCP is
 
-The **Model Context Protocol** is an open standard for AI apps to connect to external systems. Think "USB-C for AI" — one protocol, many implementations.
+The **Model Context Protocol** is an open standard for AI apps to connect to external systems. Think "USB-C for AI" - one protocol, many implementations.
 
 Core message format: JSON-RPC 2.0. Two supported transports: `stdio` (local) and `Streamable HTTP` (remote).
 
 ## Server primitives (what servers expose)
 
-- **Tools** — executable functions the model can call (e.g. `search_flights(from, to)`)
-- **Resources** — read-only data the application attaches to context (e.g. a file, a DB schema)
-- **Prompts** — templates the *user* picks from a menu (e.g. "Plan a vacation")
+- **Tools** - executable functions the model can call (e.g. `search_flights(from, to)`)
+- **Resources** - read-only data the application attaches to context (e.g. a file, a DB schema)
+- **Prompts** - templates the *user* picks from a menu (e.g. "Plan a vacation")
 
 ## Client primitives (what hosts expose)
 
-- **Sampling** — server asks host to run an LLM completion on its behalf
-- **Elicitation** — server asks the *user* for input mid-task
-- **Roots** — host tells server which filesystem paths are in-scope
+- **Sampling** - server asks host to run an LLM completion on its behalf
+- **Elicitation** - server asks the *user* for input mid-task
+- **Roots** - host tells server which filesystem paths are in-scope
 
 ## stdio vs Streamable HTTP
 
@@ -35,8 +35,8 @@ Default to stdio unless you specifically need remote.
 ## 30-minute path to your first server
 
 1. Pick a language: Node (TypeScript, `@modelcontextprotocol/sdk`) or Python (`FastMCP`).
-2. Use the `mcp-authoring` plugin (in this repo) — it scaffolds the layout + entrypoint + Zod/type-hint-based schemas.
-3. Define 1–3 tools. Keep the input schemas precise.
+2. Use the `mcp-authoring` plugin (in this repo) - it scaffolds the layout + entrypoint + Zod/type-hint-based schemas.
+3. Define 1-3 tools. Keep the input schemas precise.
 4. Test with the Inspector: `npx @modelcontextprotocol/inspector <your-server-command>`.
 5. Register with Claude Code: `claude mcp add --transport stdio <name> -- <command>`.
 6. Start a session, run `/mcp`, and invoke your tool.

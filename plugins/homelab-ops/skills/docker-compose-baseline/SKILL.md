@@ -56,13 +56,13 @@ networks:
 
 ## Decisions baked in
 
-- **`restart: unless-stopped`** — survives host reboot, but manual stops stick.
-- **`user: "1000:1000"`** — never root. If the image refuses to run as non-root, it's either misconfigured or not safe for a home server.
-- **`127.0.0.1:8080:8080`** — bind to loopback; expose to the network via a reverse proxy (Caddy / Traefik / Nginx) that handles TLS + auth.
-- **Named volumes over bind mounts** — survive recreate, back up with `docker run --rm -v <vol>:/data busybox tar ...`.
-- **`healthcheck`** — compose and Traefik use this to route only to healthy containers.
-- **`deploy.resources.limits`** — Pi / single-host compose still honors these. Prevents a runaway container from OOMing the host.
-- **`logging: json-file` with rotation** — avoids filling `/var/lib/docker` with years of logs.
+- **`restart: unless-stopped`** - survives host reboot, but manual stops stick.
+- **`user: "1000:1000"`** - never root. If the image refuses to run as non-root, it's either misconfigured or not safe for a home server.
+- **`127.0.0.1:8080:8080`** - bind to loopback; expose to the network via a reverse proxy (Caddy / Traefik / Nginx) that handles TLS + auth.
+- **Named volumes over bind mounts** - survive recreate, back up with `docker run --rm -v <vol>:/data busybox tar ...`.
+- **`healthcheck`** - compose and Traefik use this to route only to healthy containers.
+- **`deploy.resources.limits`** - Pi / single-host compose still honors these. Prevents a runaway container from OOMing the host.
+- **`logging: json-file` with rotation** - avoids filling `/var/lib/docker` with years of logs.
 
 ## Reverse proxy
 
@@ -83,7 +83,7 @@ All services on the `homelab` bridge network are reachable by Caddy via DNS usin
 ## Secrets
 
 - `.env` for non-sensitive config
-- For real secrets (API keys), use Docker Secrets or a sidecar that sources from a password manager — never commit a `.env` with secrets
+- For real secrets (API keys), use Docker Secrets or a sidecar that sources from a password manager - never commit a `.env` with secrets
 
 ## Golden rules
 
@@ -92,11 +92,11 @@ All services on the `homelab` bridge network are reachable by Caddy via DNS usin
 - ✅ Named volumes, not scattered bind mounts.
 - ✅ Healthcheck on every service.
 - ✅ Resource limits on every service.
-- ✅ Loopback bind + reverse proxy — don't expose services directly to the LAN.
+- ✅ Loopback bind + reverse proxy - don't expose services directly to the LAN.
 - ❌ Don't use `privileged: true` unless you really, really must. If you must, document why.
 
 ## Related skills
 
-- `systemd-service-authoring` — run docker-compose as a systemd unit (`docker compose up -d` in an `ExecStart`)
-- `ssh-hardening` — before exposing anything, lock down SSH
-- `ufw-basics` — firewall layer in front of Docker
+- `systemd-service-authoring` - run docker-compose as a systemd unit (`docker compose up -d` in an `ExecStart`)
+- `ssh-hardening` - before exposing anything, lock down SSH
+- `ufw-basics` - firewall layer in front of Docker

@@ -1,7 +1,7 @@
 {
   "name": "aws-serverless-patterns",
-  "version": "0.1.0",
-  "description": "Generic AWS CDK + SAM patterns with middy middleware and Powertools",
+  "version": "0.2.0",
+  "description": "Generic AWS serverless patterns: Lambda, DynamoDB, Step Functions, CloudFront, WAF, OpenSearch, Valkey, SES, WebSocket, and more",
   "author": {
     "name": "ForgePoint Labs",
     "email": "hello@forgepoint.io"
@@ -9,5 +9,5 @@
   "homepage": "https://github.com/forgepoint-labs/claude-kit",
   "repository": "https://github.com/forgepoint-labs/claude-kit",
   "license": "MIT",
-  "keywords": ["aws", "lambda", "cdk", "sam", "middy", "powertools", "serverless", "typescript"]
+  "keywords": ["aws", "lambda", "cdk", "sam", "middy", "powertools", "serverless", "typescript", "dynamodb", "step-functions", "cloudfront", "waf", "opensearch", "valkey", "ses", "websocket", "codebuild", "flyway"]
 }

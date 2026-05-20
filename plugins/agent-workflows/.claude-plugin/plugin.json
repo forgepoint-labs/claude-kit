@@ -1,0 +1,13 @@
+{
+  "name": "agent-workflows",
+  "version": "0.1.0",
+  "description": "GitHub-native agent workflows: structured PR review, issue triage, spec-driven implementation, and self-improvement loops",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["github", "review", "triage", "spec", "implementation", "agent", "workflow"]
+}

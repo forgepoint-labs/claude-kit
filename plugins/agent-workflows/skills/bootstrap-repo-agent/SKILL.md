@@ -1,0 +1,118 @@
+---
+name: bootstrap-repo-agent
+description: Bootstrap agent infrastructure for a repository - triage label config, stakeholders, and local companion skill stubs. Run once when setting up agent workflows on a new or existing repository.
+---
+
+# Bootstrap repository agent infrastructure
+
+Analyze the target repository and generate the configuration files used by the agent-workflows skills.
+
+## Outputs
+
+This skill produces up to four files:
+
+1. **`.github/issue-triage/config.json`** — label definitions used during triage.
+2. **`.github/STAKEHOLDERS`** — CODEOWNERS-style ownership mappings.
+3. **`.github/oz/config.yml`** — self-improvement loop configuration.
+4. Local companion skill stubs (documented but not scaffolded — see below).
+
+## Workflow
+
+### 1. Discover existing labels
+
+```sh
+gh label list --limit 200 --json name,color,description
+```
+
+Classify each label into:
+
+- **area** labels — identify a component or subsystem (e.g. `area:api`, `area:docs`)
+- **feature** labels — identify a capability or request type (e.g. `enhancement`, `bug`)
+- **status** labels — identify workflow state (e.g. `triaged`, `needs-info`, `wontfix`)
+
+If the repository has very few labels, seed with sensible defaults:
+
+- `triaged` (status), `bug` (feature), `enhancement` (feature), `documentation` (feature), `needs-info` (status), `duplicate` (status)
+- `repro:high`, `repro:medium`, `repro:low`, `repro:unknown` (status)
+
+### 2. Analyze recent issues
+
+```sh
+gh issue list --state all --limit 100 --json number,title,labels,createdAt
+```
+
+If issues use labels not yet captured, add them. Check `.github/ISSUE_TEMPLATE/` for template files that reference labels.
+
+### 3. Generate or update `config.json`
+
+- Read any existing `.github/issue-triage/config.json`.
+- Merge newly discovered labels without removing existing ones.
+- The config must contain **only** the `labels` key.
+- Each label entry: `{ "color": "6-char hex without #", "description": "one sentence" }`.
+- Write to `.github/issue-triage/config.json`.
+- Validate with `jq`.
+
+### 4. Generate or update `.github/STAKEHOLDERS`
+
+- Inspect `CODEOWNERS` if it exists for ownership hints.
+- Use `git log --format='%aN <%aE>' --since='6 months ago'` and `gh api` to identify recent contributors.
+- Merge new entries without overwriting existing ones.
+- Write using CODEOWNERS conventions:
+
+```
+# Syntax follows CODEOWNERS conventions: later rules take precedence.
+# NOTE: This file is advisory only — GitHub does not enforce it.
+
+# --- Section comment ---
+/path/pattern/ @owner1 @owner2
+```
+
+### 5. Generate `.github/oz/config.yml`
+
+Create the self-improvement configuration:
+
+```yaml
+version: 1
+self_improvement:
+  base_branch: auto
+```
+
+### 6. Create missing labels
+
+For every label in the final `config.json` that does not exist on the repository:
+
+```sh
+gh label create "<name>" --color "<color>" --description "<description>"
+```
+
+Ignore errors for labels that already exist.
+
+### 7. Document companion skill locations
+
+The following local companion skills can be created to customize agent behavior for this repository. Do **not** scaffold them during bootstrap — they are created on-demand by the `self-improve-skills` skill or by a maintainer when there is evidence-backed content to add:
+
+- `.agents/skills/review-pr-local/SKILL.md` — repo-specific review guidance
+- `.agents/skills/triage-issue-local/SKILL.md` — repo-specific triage guidance
+- `.agents/skills/dedupe-issue-local/SKILL.md` — repo-specific duplicate detection clusters
+
+### 8. Validate and summarize
+
+- Re-validate `config.json` with `jq`.
+- Print a summary of:
+  - How many labels were discovered vs. newly created
+  - How many stakeholder entries were written
+  - Which companion skills already exist (if any)
+  - Any warnings (no issues found, no CODEOWNERS file, etc.)
+
+## Idempotency
+
+This skill is safe to run multiple times:
+
+- Merges new labels without removing old ones
+- Merges stakeholder entries without duplicating
+- Skips label creation for labels that already exist
+
+## Assumptions
+
+- The `gh` CLI is authenticated and has access to the target repository.
+- The skill is run from the repository root.

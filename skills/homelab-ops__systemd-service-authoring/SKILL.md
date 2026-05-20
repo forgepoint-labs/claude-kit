@@ -17,10 +17,10 @@ Use when the user has a binary / script they want to run as a long-running Linux
 1. **Binary path** (absolute)
 2. **Run as what user?** Prefer a dedicated non-root user.
 3. **Needs network?** (most do)
-4. **Needs write access to what paths?** (enumerate — the hardening options below deny by default)
+4. **Needs write access to what paths?** (enumerate - the hardening options below deny by default)
 5. **Should it restart on failure?** (almost always yes)
 
-## Template — `/etc/systemd/system/<name>.service`
+## Template - `/etc/systemd/system/<name>.service`
 
 ```ini
 [Unit]
@@ -40,7 +40,7 @@ RestartSec=5s
 StandardOutput=journal
 StandardError=journal
 
-# Hardening — remove any line that blocks a real requirement
+# Hardening - remove any line that blocks a real requirement
 NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
@@ -75,6 +75,6 @@ journalctl -u <name> -f
 - ✅ Use `Type=simple` unless the binary specifically needs `notify` or `forking`.
 - ✅ Always prefer a dedicated system user over `root`.
 - ✅ Start with `ProtectSystem=strict` and loosen only with explicit `ReadWritePaths=`.
-- ✅ Use `Restart=on-failure` over `always` — `always` masks crash loops.
+- ✅ Use `Restart=on-failure` over `always` - `always` masks crash loops.
 - ❌ Don't use `User=root` unless you're genuinely doing privileged work; `CAP_*` is almost always a better fit.
-- ❌ Don't log to a custom file — let `journalctl` handle it; you get rotation, structured logs, and remote forwarding for free.
+- ❌ Don't log to a custom file - let `journalctl` handle it; you get rotation, structured logs, and remote forwarding for free.

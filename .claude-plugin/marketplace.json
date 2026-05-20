@@ -5,7 +5,7 @@
     "email": "hello@forgepoint.io"
   },
   "metadata": {
-    "description": "Public plugins for Claude Code — web, CLI, homelab, AWS serverless patterns, MCP authoring",
+    "description": "Public plugins for Claude Code - web, CLI, homelab, AWS serverless patterns, MCP authoring",
     "version": "0.1.0",
     "pluginRoot": "./plugins"
   },
