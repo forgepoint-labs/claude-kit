@@ -1,6 +1,6 @@
 ---
 name: sam-api-gateway
-description: Author a SAM template fronting Lambda handlers with API Gateway REST API — events, CORS, stages, authorizers, and esbuild build. Use when adding a new HTTP endpoint in a SAM project or wiring a new API Gateway from scratch.
+description: Author a SAM template fronting Lambda handlers with API Gateway REST API - events, CORS, stages, authorizers, and esbuild build. Use when adding a new HTTP endpoint in a SAM project or wiring a new API Gateway from scratch.
 ---
 
 # SAM API Gateway template
@@ -156,16 +156,16 @@ parameter_overrides = "Environment=prod"
 
 ## Golden rules
 
-- ✅ Use `BuildMethod: esbuild` for TS — faster, smaller, same metadata shape.
-- ✅ Mark `@aws-sdk/*` and Powertools as external — they're in the runtime.
-- ✅ ARM64 + Node 22 — cheaper and faster.
+- ✅ Use `BuildMethod: esbuild` for TS - faster, smaller, same metadata shape.
+- ✅ Mark `@aws-sdk/*` and Powertools as external - they're in the runtime.
+- ✅ ARM64 + Node 22 - cheaper and faster.
 - ✅ Cognito authorizer unless you have a reason to roll your own.
-- ✅ TracingEnabled + per-function Tracing: Active — X-Ray end-to-end.
+- ✅ TracingEnabled + per-function Tracing: Active - X-Ray end-to-end.
 - ✅ Tight CORS per env, not `*` in prod.
-- ❌ Don't define resource-level CORS per function — use Globals.Api.
+- ❌ Don't define resource-level CORS per function - use Globals.Api.
 
 ## Related skills
 
-- `middy-lambda-authoring` — the handler inside each function
-- `powertools-logger` — logging + metrics patterns
-- `cdk-nested-stack` — CDK alternative if you're not on SAM
+- `middy-lambda-authoring` - the handler inside each function
+- `powertools-logger` - logging + metrics patterns
+- `cdk-nested-stack` - CDK alternative if you're not on SAM

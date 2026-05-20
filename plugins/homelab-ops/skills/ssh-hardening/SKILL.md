@@ -1,6 +1,6 @@
 ---
 name: ssh-hardening
-description: Harden SSH on a Linux server — disable password auth, require keys, disable root login, configure fail2ban, and decide whether to change the port. Use when securing SSH on a new server or auditing an existing one.
+description: Harden SSH on a Linux server - disable password auth, require keys, disable root login, configure fail2ban, and decide whether to change the port. Use when securing SSH on a new server or auditing an existing one.
 ---
 
 # SSH hardening
@@ -12,13 +12,13 @@ Default OpenSSH is safe enough for a brand-new server behind a firewall, but a f
 1. Confirm your SSH key is installed: `ssh-copy-id user@host` (and TEST that you can log in with the key) before you disable password auth.
 2. Keep a rescue session open while editing `sshd_config`. If you lock yourself out, the session already in is your lifeline.
 
-## Essential changes — `/etc/ssh/sshd_config`
+## Essential changes - `/etc/ssh/sshd_config`
 
 ```ini
 # Force SSH protocol 2
 Protocol 2
 
-# Disable password auth — keys only
+# Disable password auth - keys only
 PasswordAuthentication no
 ChallengeResponseAuthentication no
 KbdInteractiveAuthentication no
@@ -48,7 +48,7 @@ MaxSessions 4
 Apply:
 
 ```sh
-sudo sshd -t                    # test config — DO THIS FIRST
+sudo sshd -t                    # test config - DO THIS FIRST
 sudo systemctl reload sshd      # reload only, don't restart (keeps existing sessions)
 ```
 
@@ -74,7 +74,7 @@ bantime = 3600
 
 Then: `sudo systemctl enable --now fail2ban` and verify with `sudo fail2ban-client status sshd`.
 
-## Port choice — don't bother
+## Port choice - don't bother
 
 Moving SSH off port 22 is security-through-obscurity. It reduces log noise but doesn't stop targeted attackers. Keep 22; rely on key-only auth + fail2ban + firewall.
 
@@ -83,8 +83,8 @@ The exception: if you have to keep password auth enabled (rare), moving the port
 ## Per-user key best practices
 
 - Use `ed25519` keys: `ssh-keygen -t ed25519 -C "you@host"`
-- Use a distinct key per client machine — never copy private keys between devices
-- Passphrase + `ssh-agent` — balances convenience and theft-resistance
+- Use a distinct key per client machine - never copy private keys between devices
+- Passphrase + `ssh-agent` - balances convenience and theft-resistance
 
 ## Multi-factor (optional but recommended for exposed servers)
 
@@ -110,11 +110,11 @@ sudo ss -tnlp | grep :22             # confirm sshd is still bound as expected
 - ✅ `sshd -t` before every reload.
 - ✅ fail2ban enabled.
 - ✅ Keep a second rescue session open while editing config.
-- ❌ Don't disable `UsePAM` — it handles lockouts and shell startup.
+- ❌ Don't disable `UsePAM` - it handles lockouts and shell startup.
 - ❌ Don't rely on port change as a security measure.
 
 ## Related skills
 
-- `ufw-basics` — firewall layer; only allow 22 from trusted ranges if possible
-- `unattended-upgrades` — keep OpenSSH patched automatically
-- `systemd-service-authoring` — sshd is a systemd unit like any other
+- `ufw-basics` - firewall layer; only allow 22 from trusted ranges if possible
+- `unattended-upgrades` - keep OpenSSH patched automatically
+- `systemd-service-authoring` - sshd is a systemd unit like any other

@@ -9,6 +9,10 @@ FORBIDDEN_PATTERNS=(
   "agility"
   "agc-"
   "agc_"
+  "agc/"
+  "agc\\."
+  "[[:space:]]agc[[:space:]]"
+  "[[:space:]]agc[[:punct:]]"
   "agilitycredit"
   "precise-id"
   "preciseid"
@@ -23,7 +27,6 @@ FORBIDDEN_PATTERNS=(
   "agc-dev"
   "agc-demo"
   "agc-prod"
-  "agc\\.com"
   "cassius"
   "monster qa"
 )
@@ -82,7 +85,7 @@ for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
 done
 
 if [ ${#VIOLATIONS[@]} -gt 0 ]; then
-  echo "❌ SEPARATION AUDIT FAILED — CLIENT/EMPLOYER CONTENT DETECTED"
+  echo "❌ SEPARATION AUDIT FAILED - CLIENT/EMPLOYER CONTENT DETECTED"
   echo ""
   printf '%s\n' "${VIOLATIONS[@]}"
   echo ""
@@ -90,4 +93,4 @@ if [ ${#VIOLATIONS[@]} -gt 0 ]; then
   exit 1
 fi
 
-echo "✅ Separation audit passed — no forbidden content found."
+echo "✅ Separation audit passed - no forbidden content found."

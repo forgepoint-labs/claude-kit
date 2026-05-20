@@ -1,0 +1,99 @@
+---
+name: apigateway-websocket
+description: Build realtime features with API Gateway WebSocket APIs - route keys, connection management in DynamoDB, tenant-scoped broadcast, reconnection handling, and keep-alive. Use when adding a WebSocket route, implementing realtime updates, or debugging dropped connections.
+---
+
+# API Gateway WebSocket patterns
+
+Patterns for building reliable WebSocket APIs with connection tracking and tenant-scoped broadcast.
+
+## Route keys
+
+API Gateway routes messages to Lambdas based on a `route` field in the message body:
+
+- `$connect` — client opens a WS connection (auth happens here)
+- `$disconnect` — client drops (clean or abrupt)
+- `$default` — fallback for unrecognized routes
+- `subscribe` — custom: client subscribes to entity updates
+- `ping` — keep-alive handshake
+
+## Connection table (DynamoDB)
+
+Every active connection gets a DDB item:
+
+```
+pk: TENANT#<scope>#WS
+sk: CONN#<connectionId>
+ttl: <unix-timestamp + 2h>
+userId: <userId>
+subscriptions: ["order#<id>", "report#<id>"]
+```
+
+- `$connect` inserts; `$disconnect` deletes.
+- TTL reaps stale items if `$disconnect` is missed.
+- GSI `gsi1pk = SUB#<scope>#<entity>#<id>` → `sk = connectionId` for efficient broadcast lookup.
+
+## Authentication at $connect
+
+API Gateway WebSocket `$connect` passes the JWT as a query string (headers aren't supported on the WS upgrade in browsers):
+
+```
+wss://ws.example.com?token=<jwt>
+```
+
+Lambda authorizer validates and returns `Allow` + context with user/scope claims. `$connect` handler persists the connection item.
+
+## Broadcasting to subscribers
+
+DynamoDB stream on the entity table invokes a broadcast Lambda:
+
+```ts
+const subs = await ddb.query({
+  IndexName: "gsi1",
+  KeyConditionExpression: "gsi1pk = :k",
+  ExpressionAttributeValues: {
+    ":k": `SUB#${scope}#ORDER#${orderId}`,
+  },
+});
+
+await Promise.all(
+  subs.Items.map((item) =>
+    apigateway.postToConnection({
+      ConnectionId: item.sk.replace("CONN#", ""),
+      Data: JSON.stringify({ type: "order.updated", data: updated }),
+    }).catch(async (err) => {
+      if (err.$metadata?.httpStatusCode === 410) {
+        await ddb.delete({ Key: item }); // connection is gone
+      }
+    })
+  ),
+);
+```
+
+`postToConnection` returns HTTP 410 if the connection is gone — always handle this to clean up stale rows.
+
+## Client-side reconnection
+
+- Auto-reconnect with exponential backoff (1s start, 30s cap)
+- Re-subscribe to all previous subscriptions on reconnect
+- Expose connection state: `connected | reconnecting | disconnected`
+
+## Keep-alive
+
+API Gateway idle-disconnects after 10 minutes. Client sends `ping` every 4 minutes; server responds with `pong`.
+
+## Monitoring
+
+- `WebSocketConnections` gauge (emitted on $connect / $disconnect)
+- `WebSocketBroadcastLatency` — time from stream event to postToConnection
+- Alarm on broadcast latency p95 > 2s
+
+## Golden rules
+
+- ✅ Always clean up HTTP 410 connections — stale rows accumulate fast.
+- ✅ Auth at `$connect` via Lambda authorizer — don't trust later messages.
+- ✅ Broadcast via DDB stream → broadcast Lambda, not directly from the write path.
+- ✅ Use a GSI for subscription lookup — one Query per broadcast.
+- ✅ Client reconnects + resubscribes automatically.
+- ❌ Don't use WebSocket for request/response — use the REST API.
+- ❌ Don't store tokens in the connection item — validate at connect and store only claims.

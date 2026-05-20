@@ -31,7 +31,7 @@ This is ufw's out-of-box default on a fresh install, but reassert it explicitly.
 ## Essential allows
 
 ```sh
-# SSH (always first — already done above)
+# SSH (always first - already done above)
 sudo ufw allow 22/tcp
 
 # Web, if you run a reverse proxy
@@ -82,7 +82,7 @@ Logs land in `/var/log/ufw.log`. `medium` is the right balance for home-server s
 
 - Enabling before allowing SSH → locked out. Use `ufw status` BEFORE `ufw enable` to sanity-check.
 - Forgetting UDP for services that need it (DNS, WireGuard, mosh). UFW `allow 53` covers both TCP and UDP; `allow 53/tcp` only covers TCP.
-- Rules out of order — ufw evaluates in the order they're added. List with `sudo ufw status numbered` and reorder with `sudo ufw delete <n>` + `sudo ufw insert <n> ...`.
+- Rules out of order - ufw evaluates in the order they're added. List with `sudo ufw status numbered` and reorder with `sudo ufw delete <n>` + `sudo ufw insert <n> ...`.
 
 ## Inspect + tear down
 
@@ -95,8 +95,8 @@ sudo ufw disable            # turn off, rules persist
 
 ## Docker caveat
 
-Docker bypasses ufw by default — it inserts its own iptables rules. If you run Docker on the same host, either:
-1. Use `DOCKER_OPTS="--iptables=false"` (breaks Docker networking) — not recommended
+Docker bypasses ufw by default - it inserts its own iptables rules. If you run Docker on the same host, either:
+1. Use `DOCKER_OPTS="--iptables=false"` (breaks Docker networking) - not recommended
 2. Use `ufw-docker` (https://github.com/chaifeng/ufw-docker) to integrate the two
 3. Bind container ports to `127.0.0.1` and let a reverse proxy handle inbound
 
@@ -108,12 +108,12 @@ Option 3 is the simplest for a homelab.
 - ✅ Default-deny inbound.
 - ✅ `ufw limit` on SSH when reachable from the internet.
 - ✅ `ufw status verbose` before and after every change.
-- ✅ Log at medium level — useful without drowning the disk.
+- ✅ Log at medium level - useful without drowning the disk.
 - ❌ Don't run ufw and firewalld / iptables-persistent simultaneously.
 - ❌ Don't forget Docker circumvents ufw unless configured otherwise.
 
 ## Related skills
 
-- `ssh-hardening` — pair with SSH key-only + fail2ban for defense in depth
-- `systemd-service-authoring` — most services you're firewalling are systemd units
-- `docker-compose-baseline` — loopback bind is the ufw-compatible pattern
+- `ssh-hardening` - pair with SSH key-only + fail2ban for defense in depth
+- `systemd-service-authoring` - most services you're firewalling are systemd units
+- `docker-compose-baseline` - loopback bind is the ufw-compatible pattern

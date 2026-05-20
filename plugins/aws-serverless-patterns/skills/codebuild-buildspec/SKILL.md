@@ -1,0 +1,133 @@
+---
+name: codebuild-buildspec
+description: Author or debug a CodeBuild buildspec.yml with phase conventions, caching, artifacts, secret sourcing, and common failure modes. Use when editing a buildspec, debugging a failed build, adding a new CI job, or tuning build time.
+---
+
+# CodeBuild buildspec conventions
+
+Consistent `buildspec.yml` structure for reproducible, fast CI builds.
+
+## Canonical buildspec (TypeScript)
+
+```yaml
+version: 0.2
+
+env:
+  variables:
+    NODE_VERSION: 22
+  secrets-manager:
+    GH_TOKEN: /ci/github-token:token
+  parameter-store:
+    NPM_REGISTRY: /ci/npm-registry
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: $NODE_VERSION
+    commands:
+      - corepack enable
+      - pnpm install --frozen-lockfile
+
+  pre_build:
+    commands:
+      - pnpm lint
+      - pnpm typecheck
+
+  build:
+    commands:
+      - pnpm build
+      - pnpm test --silent
+
+  post_build:
+    commands:
+      - |
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
+          echo "Build succeeded, packaging artifacts"
+        fi
+
+cache:
+  paths:
+    - node_modules/
+    - ~/.pnpm-store/
+
+artifacts:
+  files:
+    - dist/**/*
+    - package.json
+  name: artifact-$CODEBUILD_BUILD_NUMBER
+```
+
+## Phase conventions
+
+- `install` — set up runtimes + deps. No tests, no lint.
+- `pre_build` — lint + typecheck. Fail fast on static issues.
+- `build` — compile + unit tests. The meat.
+- `post_build` — packaging conditionals, notifications. Check `CODEBUILD_BUILD_SUCCEEDING`.
+
+Keep tests in `build`, not `post_build`, so failures actually fail the build.
+
+## Secrets + parameters
+
+Never hard-code. Use CodeBuild's built-in resolution:
+
+```yaml
+env:
+  secrets-manager:
+    API_KEY: /ci/my-secret:key          # Secrets Manager JSON field
+  parameter-store:
+    REGISTRY: /ci/npm-registry          # SSM Parameter Store
+```
+
+Build role needs `secretsmanager:GetSecretValue` and `ssm:GetParameter` on the specific paths.
+
+## Caching
+
+- **Local cache**: `cache: { paths: [...] }` — keeps `node_modules`, `.pnpm-store` between builds on the same agent.
+- **S3 cache**: more persistent, slower than local. Use for large artifact caches.
+
+Cold cache = 5-minute installs; warm cache = 15-second installs. Always configure caching.
+
+## Artifacts
+
+Only include what the next pipeline stage needs:
+
+- Deploy stage: `dist/`, `cdk.out/`, package metadata — NOT `node_modules/` unless required.
+- Frontend: `dist/` only.
+
+Smaller artifacts = faster pipelines.
+
+## Per-language variations
+
+- **CDK**: add `pnpm cdk synth --no-staging` to `build`; include `cdk.out/` in artifacts.
+- **SAM**: add `sam build --cached` to `build`; include `.aws-sam/build/` in artifacts.
+- **Python**: `runtime-versions: python: 3.13`, `pip install -r requirements.txt`.
+- **Go**: `runtime-versions: golang: 1.25`, `make build`, artifact is `bin/<name>`.
+
+## Common failure modes
+
+1. **Install fails** — `--frozen-lockfile` rejects mismatched lockfile. Commit the updated lockfile.
+2. **OOM during build** — bump to `BUILD_GENERAL1_MEDIUM` (7GB).
+3. **Hang at `cdk synth`** — CDK asset requires Docker. Use `privilegedMode: true`.
+4. **`sam build` slow** — add `--cached` flag (10x faster).
+5. **Permission denied on secrets** — build role IAM missing `GetSecretValue` on the ARN.
+
+## Test reporting
+
+```yaml
+reports:
+  tests:
+    files: [junit.xml]
+    file-format: JUNITXML
+```
+
+CodeBuild surfaces test results in the console — no log digging needed.
+
+## Golden rules
+
+- ✅ `--frozen-lockfile` — mismatches should fail, not auto-update.
+- ✅ Cache `node_modules` and package store paths.
+- ✅ Artifacts are minimal — only what downstream needs.
+- ✅ Secrets via `secrets-manager:` / `parameter-store:` — never env var inline.
+- ✅ Emit test reports for visibility.
+- ❌ Don't run lint/tests in `post_build` — they need to fail the build.
+- ❌ Don't bump compute size casually — it's per-minute cost.

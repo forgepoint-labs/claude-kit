@@ -4,10 +4,10 @@ Opinionated Go 1.25 patterns for building TUI CLIs with the Charm stack (Bubblet
 
 ## Skills
 
-- `bubbletea-scaffold` — scaffold a new Bubbletea v2 CLI with sensible defaults (Makefile, `cmd/<app>`, `internal/tui`, release pipeline)
-- `bubbletea-list-view` — pattern for a selectable list view with keybindings and status bar
-- `bubbletea-form-view` — pattern for a multi-field form with validation
-- `bubbletea-test` — testing strategies for Bubbletea models (model-only unit tests + snapshot tests)
+- `bubbletea-scaffold` - scaffold a new Bubbletea v2 CLI with sensible defaults (Makefile, `cmd/<app>`, `internal/tui`, release pipeline)
+- `bubbletea-list-view` - pattern for a selectable list view with keybindings and status bar
+- `bubbletea-form-view` - pattern for a multi-field form with validation
+- `bubbletea-test` - testing strategies for Bubbletea models (model-only unit tests + snapshot tests)
 
 ## Conventions this plugin encodes
 

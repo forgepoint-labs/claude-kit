@@ -1,0 +1,13 @@
+{
+  "name": "self-improvement",
+  "version": "0.1.0",
+  "description": "Self-improvement loops for agent skills: analyze feedback, refine local companion skills, and respond to @oz-agent mentions",
+  "author": {
+    "name": "ForgePoint Labs",
+    "email": "hello@forgepoint.io"
+  },
+  "homepage": "https://github.com/forgepoint-labs/claude-kit",
+  "repository": "https://github.com/forgepoint-labs/claude-kit",
+  "license": "MIT",
+  "keywords": ["self-improvement", "feedback", "agent", "skills", "automation"]
+}
