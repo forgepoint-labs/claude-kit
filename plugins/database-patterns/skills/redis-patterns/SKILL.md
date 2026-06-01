@@ -1,0 +1,191 @@
+---
+name: redis-patterns
+description: Redis/Valkey patterns — SET/GET, colon-namespaced key naming, INCR/DECR counters, TTL with EX/PX, NX/XX conditional writes, data types (strings, lists, hashes, sets, sorted sets), caching strategies, thundering herd mitigation, and LRU eviction. Use when implementing caching, rate limiting, session storage, counters, or evaluating whether a cache layer is needed.
+---
+
+# Redis / Valkey patterns
+
+Redis is a key-value store. Valkey is the open-source fork (API-compatible — same commands, same protocol, same client libraries). Use it as a supplementary database for caching, sessions, rate limiting, and counters — almost never as your primary database.
+
+## SET / GET
+
+```redis
+SET name "Brian Holt"
+GET name
+```
+
+That's the core API. Store a value under a key, retrieve it later.
+
+## Key naming conventions
+
+Use `:` to namespace keys. Redis is one flat keyspace — naming is how you organize it.
+
+```
+user:btholt              -- user profile cache
+user:address:btholt      -- user address cache
+payment:btholt           -- payment cache
+session:abc123           -- session data
+ratelimit:api:user42:min -- rate limit counter
+```
+
+- Always use `:` as the delimiter (community standard, tools rely on it)
+- Keys can be up to 512MB (don't do that — keep them short and descriptive)
+
+## Counters — INCR / DECR
+
+```redis
+SET visits 0
+INCR visits          -- 1
+INCR visits          -- 2
+DECR visits          -- 1
+
+INCRBY score:seahawks 6
+DECRBY score:broncos 3
+```
+
+Atomic — safe for concurrent access. Fire-and-forget from your app.
+
+## Batch operations — MSET / MGET
+
+```redis
+MSET score:seahawks 43 score:broncos 8
+MGET score:seahawks score:broncos
+```
+
+## EXISTS / DEL
+
+```redis
+SET greeting hello
+EXISTS greeting     -- 1 (true)
+DEL greeting
+EXISTS greeting     -- 0 (false)
+```
+
+## Conditional writes — NX / XX
+
+```redis
+SET color blue NX   -- succeeds (key didn't exist)
+SET color red NX    -- fails (key already exists)
+SET color red XX    -- succeeds (key exists)
+SET color red NX    -- fails (key exists)
+```
+
+- `NX` = succeed only when key does **N**ot e**X**ist
+- `XX` = succeed only when key already e**X**ists
+
+Useful for distributed locking and idempotency.
+
+## TTL (time to live)
+
+```redis
+SET fitness:total:btholt 750kj EX 3600   -- expires in 1 hour (seconds)
+SET fast_cache value PX 500               -- expires in 500ms
+```
+
+- `EX` = seconds, `PX` = milliseconds
+- After expiration, Redis auto-deletes the key
+- Core to caching: serve from cache if present, recalculate if expired
+
+## Data types
+
+### Lists (arrays)
+```redis
+RPUSH notifications:btholt "Call mom" "Feed dog" "Take out trash"
+LRANGE notifications:btholt 0 -1    -- get all
+RPOP notifications:btholt            -- remove + return last
+LPUSH notifications:btholt "Urgent"  -- add to front
+LTRIM notifications:btholt 0 4      -- keep only first 5
+```
+
+### Hashes (objects)
+```redis
+HSET btholt:profile title "PM" company "Microsoft" city "Seattle"
+HGET btholt:profile city
+HGETALL btholt:profile
+HINCRBY btholt:stats visits 1
+```
+
+### Sets (unordered, unique)
+```redis
+SADD colors red blue green yellow
+SMEMBERS colors
+SISMEMBER colors green    -- 1 (true)
+SPOP colors               -- random removal
+```
+
+### Sorted sets (ordered by score)
+```redis
+ZADD ordinals 3 third
+ZADD ordinals 1 first
+ZADD ordinals 2 second
+ZRANGE ordinals 0 -1     -- returns: first, second, third
+```
+
+Priority queues, leaderboards, time-ordered data.
+
+## Caching pattern in Node.js
+
+```js
+import redis from "redis";
+const client = redis.createClient();
+await client.connect();
+
+// Generic cache wrapper
+function cache(key, ttlSeconds, slowFn) {
+  return async function (...args) {
+    const cached = await client.get(key);
+    if (cached) return cached;
+
+    const result = await slowFn(...args);
+    await client.setEx(key, ttlSeconds, result);
+    return result;
+  };
+}
+
+// Page view counter
+app.get("/pageview", async (req, res) => {
+  const views = await client.incr("pageviews");
+  res.json({ views });
+});
+```
+
+## Thundering herd problem
+
+When a cached value expires and many requests hit simultaneously, they all miss the cache and all try to recalculate — overwhelming the backend.
+
+**Mitigations:**
+1. **Background refresh**: A separate job updates the cache on a schedule (never TTL-based expiration)
+2. **Lock + wait**: First requester acquires a lock (`SET lock:key 1 EX 30 NX`), others poll or return stale data
+3. **Stale-while-revalidate**: Serve the expired value while recalculating in the background
+
+## LRU eviction
+
+Configure Redis with a max memory limit and an eviction policy:
+- `allkeys-lru` — evict least recently used keys when memory is full
+- Useful for: image caches, API response caches, any "keep what's hot" pattern
+
+## When NOT to cache
+
+- **Your database isn't actually slow** — fix the query/index first
+- **Data changes frequently** — cache invalidation becomes a nightmare
+- **You don't have a thundering herd strategy** — caching can make things worse
+- **PostgreSQL with proper indexes handles the load** — don't add complexity for nothing
+
+Caching adds indirection and debugging difficulty. Validate the need before adding it.
+
+## Golden rules
+
+- ✅ Always set a TTL — unbounded keys leak memory.
+- ✅ Use `:` as the key namespace delimiter.
+- ✅ Use `INCR` for counters — not GET + SET (races).
+- ✅ Use `NX` for distributed locks.
+- ✅ Cache-miss fallback: always read from the authoritative source if Redis is down.
+- ✅ Plan for thundering herd on high-traffic cached values.
+- ❌ Don't use `KEYS *` — use `SCAN` with cursors (KEYS blocks the server).
+- ❌ Don't store mission-critical data only in Redis — it's volatile.
+- ❌ Don't cache before you've proven you need it.
+
+## Related skills
+
+- `database-selection` — when to add a cache layer
+- `postgresql-indexing` — fix the root cause before caching
